@@ -88,6 +88,99 @@ if(options.plugins && Array.isArray(options.plugins)) {
 
 ### compiler
 
+`compiler` 是一个编辑器实例，在 `webpack` 的每个进程中只会创建一个对象，它用来创建构建对象 `compilation`.
+
+- `options` **配置属性**
+
+`webpack` 在运行时，第一件事就是读取并解析配置文件，然后将配置赋值给 `Compiler` 实例。
+
+```javascript
+compiler = new Compiler();
+// 其他代码..
+compiler.options = new WebpackOptionsApply().process(options, compiler);  // 传入 compiler 对象
+
+```
+
+然后，我们可以通过传入的 `compiler` 对象，获取到 `webpack` 的配置。
+
+```javascript
+class CustomPlugin {    
+  constructor() {}    
+  // 传入 compiler 对象
+  apply(compiler) {        
+    compiler.plugin("run", (compiler) => {            
+      console.log(compiler.options)        
+    })    
+  }
+}
+
+```
+
+- **输入输出**
+
+`compiler` 实例也会初始化输入输出，分别是 `inputFileSystem` 和 `outputFileSystem` 属性，本质上这两个属性都是对象的 `fs` 对象。
+
+需要注意的是: 当在 `watch`模式下， `outputFileSystem` 会被重写为内存输出对象，即该对象只会保存在内存中，不会映射真实的文件对象。
+
+因此，如果需要进行**文件读写**操作时，可以通过这两个属性实现。
+
+```javascript
+class CustomPlugin {    
+  constructor() {}    
+  apply(compiler) {        
+    compiler.outputFileSystem.mkdirp("/path/to/dir", (error) => {            
+      compiler.outputFileSystem.writeFile("/path/to/file", "utf-8", (error) => {            
+      })        
+    })    
+  }
+}
+
+```
+
+```javascript
+// https://github.com/webpack/webpack/blob/master/lib/Compiler.js#L501
+class Compiler extends Tapable {    
+  // 其他代码..    
+  createChildCompiler(compilation, compilerName, compilerIndex, outputOptions, plugins) {      
+    // 创建子编译器  
+    const childCompiler = new Compiler();        
+    if(Array.isArray(plugins)) {            
+      plugins.forEach(plugin => childCompiler.apply(plugin));        
+    }        
+    for(const name in this._plugins) {   
+      // 过滤以下任务点         
+      if(["make", "compile", "emit", "after-emit", "invalid", "done", "this-compilation"].indexOf(name) < 0)            
+        childCompiler._plugins[name] = this._plugins[name].slice();        
+    }        
+    childCompiler.name = compilerName;        
+    childCompiler.outputPath = this.outputPath;
+    // 输入输出        
+    childCompiler.inputFileSystem = this.inputFileSystem;        
+    childCompiler.outputFileSystem = null;        
+    childCompiler.resolvers = this.resolvers;        
+    childCompiler.fileTimestamps = this.fileTimestamps;        
+    childCompiler.contextTimestamps = this.contextTimestamps;        
+    const relativeCompilerName = makePathsRelative(this.context, compilerName);        
+    if(!this.records[relativeCompilerName]) 
+      this.records[relativeCompilerName] = [];        
+    if(this.records[relativeCompilerName][compilerIndex])        
+      childCompiler.records = this.records[relativeCompilerName][compilerIndex];        
+    else        
+      this.records[relativeCompilerName].push(childCompiler.records = {});        
+    childCompiler.options = Object.create(this.options);        
+    childCompiler.options.output = Object.create(childCompiler.options.output);        
+    for(const name in outputOptions) {            
+      childCompiler.options.output[name] = outputOptions[name];        
+    }        
+    childCompiler.parentCompilation = compilation;        
+    compilation.applyPlugins("child-compiler", childCompiler, compilerName, compilerIndex);        
+    return childCompiler;    
+  }
+}
+
+```
+
+
 ### compilation
 
 
