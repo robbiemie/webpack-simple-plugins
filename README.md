@@ -1,4 +1,4 @@
-# webpack-simple-plgins
+# 深入理解 webpack plgins
 
 ## 插件结构
 
@@ -125,19 +125,6 @@ class CustomPlugin {
 因此，如果需要进行**文件读写**操作时，可以通过这两个属性实现。
 
 ```javascript
-class CustomPlugin {    
-  constructor() {}    
-  apply(compiler) {        
-    compiler.outputFileSystem.mkdirp("/path/to/dir", (error) => {            
-      compiler.outputFileSystem.writeFile("/path/to/file", "utf-8", (error) => {            
-      })        
-    })    
-  }
-}
-
-```
-
-```javascript
 // https://github.com/webpack/webpack/blob/master/lib/Compiler.js#L501
 class Compiler extends Tapable {    
   // 其他代码..    
@@ -157,16 +144,7 @@ class Compiler extends Tapable {
     // 输入输出        
     childCompiler.inputFileSystem = this.inputFileSystem;        
     childCompiler.outputFileSystem = null;        
-    childCompiler.resolvers = this.resolvers;        
-    childCompiler.fileTimestamps = this.fileTimestamps;        
-    childCompiler.contextTimestamps = this.contextTimestamps;        
-    const relativeCompilerName = makePathsRelative(this.context, compilerName);        
-    if(!this.records[relativeCompilerName]) 
-      this.records[relativeCompilerName] = [];        
-    if(this.records[relativeCompilerName][compilerIndex])        
-      childCompiler.records = this.records[relativeCompilerName][compilerIndex];        
-    else        
-      this.records[relativeCompilerName].push(childCompiler.records = {});        
+    // 省略部分逻辑...    
     childCompiler.options = Object.create(this.options);        
     childCompiler.options.output = Object.create(childCompiler.options.output);        
     for(const name in outputOptions) {            
@@ -183,6 +161,16 @@ class Compiler extends Tapable {
 
 ### compilation
 
+> `compiler` 对象作为构建入口对象，负责解析全局的 `webpack` 配置，再将配置应用到 `compilation` 对象中。 `compilation` 包含了每次 `build` 后的详细信息，包括编译结果、错误信息、模块(modules)、编译后的资源、改变的文件和依赖等。同时，它提供了很多事件钩子(hook).
+
+在 `compilation` 对象中，有以下几个重要的属性:
+
+- `modules` 所有解析后的模块
+- `chunks` 所有的chunk
+- `assets` 记录要生成的文件
+
+
+
 
 
 ## 参考文档
@@ -192,4 +180,6 @@ class Compiler extends Tapable {
 - [webpack-hot-middleware 源码实现](https://github.com/webpack-contrib/webpack-hot-middleware/blob/master/middleware.js#L6)
 - [开发一个简单的 webpack 插件](https://kirainmoe.com/blog/post/webpack-plugin-developing-tutorial/)
 - [webpack-compiler-and-compilation](https://github.com/liangklfangl/webpack-compiler-and-compilation)
-- [玩转 webpack](https://cloud.tencent.com/developer/article/1030740)
+- [webpack的基本架构和构建流程](https://cloud.tencent.com/developer/article/1006353)
+- [webpack的核心对象](https://cloud.tencent.com/developer/article/1030740)
+- [Webpack插件开发简要](http://www.cnblogs.com/sampapa/p/6958166.html)
