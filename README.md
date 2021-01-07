@@ -10,6 +10,7 @@
 - 对 web 具有更好的兼容性
 - 清理内部结构，不引入任何 breaking changes
 - 增加 breaking change 来为将来的功能特性做准备，使 v5 版本得到长期支持
+- node.js 最低支持版本号已从 6 -> 10.13.0(LTS)
 
 
 
@@ -71,6 +72,71 @@ A new named chunk id algorithm enabled by default in development mode gives chun
 3.2 **Module Federation**
 
 模块联合，是 webpack 5.x 新支持的特性，它允许多个 webpack 构建同时协同工作。
+
+### 四、web 新的平台特性
+
+- **JSON modules**
+- **Asset modules**
+- **import meta**
+- **Native Worker support**
+- **Uris**
+- **Async modules**
+- **Externals**
+
+
+### 五、Node.js 新的 Ecosystem Features
+
+5.1 Resolving
+
+package.json 文件现在已经支持 `exports` 和 `imports` 字段。
+
+
+### 六、优化（Optimization）
+
+
+6.1 Nested tree-shaking
+
+webpack 现在可以跟踪到导出的嵌套属性，这将会优化 tree-shaking 性能。
+
+```js
+// inner.js
+export const a = 1;
+export const b = 2;
+
+// module.js
+import * as inner from "./inner";
+export { inner }
+
+// user.js
+import * as module from "./module";
+console.log(module.inner.a);
+```
+
+`export b` 变量，在生产环境模式下，被剔除掉。
+
+
+
+### 七、性能（Performance）
+
+7.1 **持久缓存（Persistent Caching）**
+
+现在有一个 cache 文件系统，可以通过下面的配置启用:
+
+```js
+cache: {
+  // 1. 设置 Cache 类型为 filesystem
+  type: "filesystem",
+  buildDependencies: {
+    // 2. 设置 config 配置，当 config 发生变更时，使缓存失效
+    config: [__filename]
+  }
+}
+```
+
+7.2 Compiler Idle and Close
+
+
+
 
 webpack 5.x 变更记录，请参考: 
 
