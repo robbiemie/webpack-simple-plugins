@@ -1,0 +1,4 @@
+/client
+!/test/client
+coverage
+node_modules
