@@ -62,7 +62,15 @@ The algorithms assign short (3 or 4 characters) numeric IDs to modules and chunk
 当配置为: [`contenthash`] 时，webpack 5 将使用文件内容的 real hash. 此前，仅对内部结构进行 hash。这种方式将在执行**修改代码注释**和**变量重命名**的操作时，可以提升长期缓存的效果。
 
 
+### 三、Development Support
 
+3.1 **Named Chunk IDs**
+
+A new named chunk id algorithm enabled by default in development mode gives chunks (and filenames) human-readable names. A Module ID is determined by its path, relative to the context. A Chunk ID is determined by the chunk's content.
+
+3.2 **Module Federation**
+
+模块联合，是 webpack 5.x 新支持的特性，它允许多个 webpack 构建同时协同工作。
 
 webpack 5.x 变更记录，请参考: 
 
