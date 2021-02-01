@@ -1,0 +1,15 @@
+{
+  "name": "v5",
+  "version": "1.0.0",
+  "description": "- 使用**持久缓存(Persistent Caching)**，提升构建性能 - 使用更优的算法(algorithms)和默认值(defaults)，提升 Long Term Caching - 利用 Tree Shaking 和代码生成(Code Generation),减小 bundle 包的体积 - 对 web 具有更好的兼容性 - 清理内部结构，不引入任何 breaking changes - 增加 breaking change 来为将来的功能特性做准备，使 v5 版本得到长期支持 - node.js 最低支持版本号已从 6 -> 10.13.0(LTS)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.19.0",
+    "webpack-cli": "^4.4.0"
+  }
+}
