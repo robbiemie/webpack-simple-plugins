@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/yang657850144/webpack-simple-plgins#readme",
   "dependencies": {
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^3.2.1"
   }
 }
